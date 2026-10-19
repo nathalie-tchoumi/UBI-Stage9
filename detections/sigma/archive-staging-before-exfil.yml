@@ -1,0 +1,23 @@
+title: Archive Staging via tar/zip Utility Spawned from PowerShell
+id: stage9-d2-003
+status: test
+description: >
+  Detects an archive utility (tar, zip, 7z) spawned from powershell.exe,
+  commonly used to stage data prior to exfiltration.
+references:
+  - decision-log.md#D-003
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection:
+    event_type: process_start
+    image|contains:
+      - 'tar.exe'
+      - 'zip.exe'
+      - '7z.exe'
+    parent_image|endswith: 'powershell.exe'
+  condition: selection
+falsepositives:
+  - Legitimate backup or deployment scripts using PowerShell-invoked archive utilities (should be scoped by known automation host/user allowlist)
+level: medium

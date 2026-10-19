@@ -1,0 +1,21 @@
+title: Staged Archive Deleted Shortly After Creation by Same Process Tree
+id: stage9-d2-004
+status: test
+description: >
+  Detects a file_delete event on a .zip file where the deleting process
+  image is powershell.exe, consistent with anti-forensic cleanup of a
+  staged exfiltration archive.
+references:
+  - decision-log.md#D-003
+logsource:
+  category: file_event
+  product: windows
+detection:
+  selection:
+    event_type: file_delete
+    image|endswith: 'powershell.exe'
+    detail|contains: '.zip'
+  condition: selection
+falsepositives:
+  - Routine cleanup of legitimate temporary zip files by administrative PowerShell scripts (should be correlated with staging/exfil rules rather than alerted alone; low-confidence in isolation)
+level: low

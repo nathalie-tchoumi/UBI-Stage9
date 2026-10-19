@@ -1,0 +1,24 @@
+title: Office Application Spawning PowerShell
+id: stage9-d2-001
+status: test
+description: >
+  Detects a PowerShell process spawned directly from a Microsoft Office
+  application (Word, Excel, PowerPoint), a common initial-execution
+  pattern following a malicious document attachment being opened.
+references:
+  - decision-log.md#D-003
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection:
+    event_type: process_start
+    image|endswith: 'powershell.exe'
+    parent_image|contains:
+      - 'WINWORD.EXE'
+      - 'EXCEL.EXE'
+      - 'POWERPNT.EXE'
+  condition: selection
+falsepositives:
+  - Legitimate Office macros that call PowerShell for approved automation (rare, should be allowlisted by hash/publisher, not by this rule alone)
+level: high

@@ -1,0 +1,23 @@
+title: Scheduled Task Creation Following Suspicious PowerShell
+id: stage9-d2-002
+status: test
+description: >
+  Detects schtasks.exe spawned from powershell.exe, a common persistence
+  mechanism. Matches on process lineage only (image/parent_image), not
+  on a fixed command-line argument order, since scheduled task creation
+  syntax has multiple valid argument orderings per Microsoft documentation.
+references:
+  - decision-log.md#D-003
+  - decision-log.md#learnings (Stage 8: never match fixed argument order)
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection:
+    event_type: scheduled_task_create
+    image|endswith: 'schtasks.exe'
+    parent_image|endswith: 'powershell.exe'
+  condition: selection
+falsepositives:
+  - Legitimate administrative scripts that create scheduled tasks via PowerShell (should be scoped by known admin host/user allowlist, not excluded from this rule)
+level: high
